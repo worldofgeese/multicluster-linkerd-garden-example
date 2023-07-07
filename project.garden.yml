@@ -1,0 +1,54 @@
+apiVersion: garden.io/v1
+kind: Project
+name: templated-k8s-container
+environments:
+  - name: local
+  - name: testing
+providers:
+  - name: local-kubernetes
+    environments: [local]
+  - name: kubernetes
+    environments: [testing]
+    # Replace the below values as appropriate
+    kubeconfig: ${var.terraformInitRoot}/${providers.terraform.outputs.kubeconfig_path}
+    context: ${var.clusterName}
+    namespace: ${project.name}-testing-${var.userId}
+    defaultHostname: ${project.name}-testing-${var.userId}.dev-1.sys.garden
+    buildMode: kaniko
+    deploymentRegistry:
+      hostname: ${variables.registryHostname}
+      namespace: ${variables.registryNamespace}
+    imagePullSecrets:
+      # Make sure this matches the name and namespace of the imagePullSecret you've created
+      # to authenticate with your registry (if needed)
+      - name: gcr-config
+        namespace: default
+  - name: terraform
+    # This must be set to indicate that there is a stack in the terraform project folder.
+    initRoot: "${var.terraformInitRoot}"
+    autoApply: true
+    # You can either uncomment and replace these with your own values, or provide the values in a
+    # terraform.tfvars file in the project root.
+    # variables:
+    #   gcp_project_id: garden-gke-tf-${var.userId}
+    #   gcp_region: europe-west1
+    allowDestroy: true
+    # You can either uncomment and replace these with your own values, or provide the values in a
+    # terraform.tfvars file in the project root.
+    variables:
+      region: ${var.civoRegion}
+      cluster_name: civo_${var.civoRegion}_${var.teamName}
+      node_count: ${var.nodeCount}
+      node_size: ${var.nodeSize}
+      kubernetes_version: ${var.kubernetesVersion}
+
+variables:
+  userId: ${local.username}
+  terraformInitRoot: "./infrastructure/"
+  civoRegion: "FRA1"
+  teamName: "bravo"
+  nodeCount: 1
+  nodeSize: "g4s.kube.medium"
+  registryHostname: docker.io
+  registryNamespace: worldofgeese
+  kubernetesVersion: "1.27.1-k3s1"

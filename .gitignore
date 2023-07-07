@@ -1,0 +1,5 @@
+.garden
+.terraform
+*.tfstate*
+garden.tfvars.json
+.terraform.lock.hcl
