@@ -10,7 +10,7 @@ To see the generated action in detail, you can run `garden get actions --output=
 
 Before deployment, be sure to have your Civo token exported as `CIVO_TOKEN` first. You can generate a Civo token [here](https://dashboard.civo.com/security).
 
-Change `deploymentRegistry` in [project.garden.yml](./garden.yml) to your own Docker registry to deploy to your own registry. Ensure you've first logged in to your registry with `docker login`.
+Change `registryHostname` and `registryNamespace` in [project.garden.yml](./garden.yml) to your own Docker registry and namespace. Ensure you've first logged in to your registry with `docker login`. Double-check any other variables defined under `variables:` in [project.garden.yml](./project.garden.yml) to ensure they match your desired configuration.
 
 Now test the example with a local Kubernetes cluster, simply run `garden deploy`. Destroy your project and cluster with `garden cleanup namespace`.
 
