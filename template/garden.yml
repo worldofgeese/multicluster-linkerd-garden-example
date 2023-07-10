@@ -51,8 +51,7 @@ configs:
               spec:
                 containers:
                   - name: main
-                    image: nginx
-                    imagePullPolicy: "Always"
+                    image: ${actions.build["${parent.name}"].outputs.deployment-image-id}
                     ports:
                       - name: http
                         containerPort: ${inputs.containerPort}

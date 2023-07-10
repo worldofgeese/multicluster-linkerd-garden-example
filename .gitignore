@@ -3,3 +3,4 @@
 *.tfstate*
 garden.tfvars.json
 .terraform.lock.hcl
+kubeconfig.yaml

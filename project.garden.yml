@@ -10,19 +10,19 @@ providers:
   - name: kubernetes
     environments: [testing]
     # Replace the below values as appropriate
-    kubeconfig: ${var.terraformInitRoot}/${providers.terraform.outputs.kubeconfig_path}
-    context: ${var.clusterName}
+    # Use the local
+    kubeconfig: "${environment.name == 'local' ? local.env.HOME + '/.kube/config' : var.terraformInitRoot + '/' + providers.terraform.outputs.kubeconfig_path}"
+    context: "${environment.name == 'local' ? var.localCluster : 'civo_' + var.civoRegion + '_' + var.teamName}"
     namespace: ${project.name}-testing-${var.userId}
     defaultHostname: ${project.name}-testing-${var.userId}.dev-1.sys.garden
-    buildMode: kaniko
     deploymentRegistry:
       hostname: ${variables.registryHostname}
       namespace: ${variables.registryNamespace}
-    imagePullSecrets:
-      # Make sure this matches the name and namespace of the imagePullSecret you've created
-      # to authenticate with your registry (if needed)
-      - name: gcr-config
-        namespace: default
+    # imagePullSecrets:
+    #   # Make sure this matches the name and namespace of the imagePullSecret you've created
+    #   # to authenticate with your registry (if needed)
+    #   - name: regcred
+    #     namespace: default
   - name: terraform
     # This must be set to indicate that there is a stack in the terraform project folder.
     initRoot: "${var.terraformInitRoot}"
@@ -43,9 +43,10 @@ providers:
       kubernetes_version: ${var.kubernetesVersion}
 
 variables:
+  localCluster: "minikube"
   userId: ${local.username}
   terraformInitRoot: "./infrastructure/"
-  civoRegion: "FRA1"
+  civoRegion: "fra1"
   teamName: "bravo"
   nodeCount: 1
   nodeSize: "g4s.kube.medium"
